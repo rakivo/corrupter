@@ -7,8 +7,8 @@
 
 #include "main.h"
 
-#define CORRUPT 0
-#define WRITE_WHAT "rakivo\n"
+#define CORRUPT 0 // <- change this one to prank you "friend"
+#define WRITE_WHAT "rakivo\n" // <- change this one to change the content that will be written
 
 const char* const IGNORED[IGNORED_CAP] = {".", "..", ".git"};
 
