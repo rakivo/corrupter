@@ -67,7 +67,7 @@ void corrupt(const char* const dir_path)
 
     if (closedir(dp) != 0) {
         perror("Couldn't close the directory");
-        exit(EXIT_FAILURE);
+        exit(1);
     }
 }
 
