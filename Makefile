@@ -1,7 +1,7 @@
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -pedantic
 
-BIN = corrupter
+BIN = corruptor
 SRC = main.c
 HEADERS = main.h
 OBJS = $(SRC:.c=.o)
