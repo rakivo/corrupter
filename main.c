@@ -83,7 +83,7 @@ int main(const int argc, const char* const* const argv)
     corrupt(argv[1]);
 
     printf("< ==================== +++ +++ ==================== >\n");
-    printf("Now the end you have %zu corrupted files, here they all are: ", corrupted_files_counter);
+    printf("Now you have %zu corrupted files, here they all are: ", corrupted_files_counter);
     printf("\n< ==================== +++ +++ ==================== >\n\n");
 
     for (size_t i = 0; i < corrupted_files_counter; ++i) {
