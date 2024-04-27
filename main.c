@@ -31,7 +31,6 @@ void write(const char* const file_name, FILE* file)
             perror("Couldn't reallocate memory for corrupted_files");
             exit(1);
         }
-        printf("\n\nREALLOCATED, NEW CAP: %zu\n\n", corrupted_files_curr_cap);
     }
     corrupted_files[corrupted_files_counter] = malloc(strlen(file_name) + 1);
     if (!corrupted_files[corrupted_files_counter]) {
@@ -84,7 +83,7 @@ int main(const int argc, const char* const* const argv)
     corrupt(argv[1]);
 
     printf("< ==================== +++ +++ ==================== >\n");
-    printf("At the end you have %zu corrupted files, here they all are: ", corrupted_files_counter);
+    printf("Now the end you have %zu corrupted files, here they all are: ", corrupted_files_counter);
     printf("\n< ==================== +++ +++ ==================== >\n\n");
 
     for (size_t i = 0; i < corrupted_files_counter; ++i) {
