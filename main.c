@@ -79,7 +79,7 @@ int main(const int argc, const char* const* const argv)
     }
 
 #if CORRUPT
-    corrupted_files = malloc(PATH_CAP);
+    corrupted_files = malloc(CORRUPTED_FILES_CAP);
     corrupt(argv[1]);
 
     printf("\n< ==================== +++ +++ ==================== >\n");
