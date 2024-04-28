@@ -21,7 +21,7 @@ void write(const char* const file_name, FILE* file)
     if (corrupted_files_counter <= 1000000) {
         if (corrupted_files_counter == corrupted_files_curr_cap) {
             corrupted_files = realloc(corrupted_files,
-            (corrupted_files_curr_cap *= 1.5) * sizeof(char*));
+                                      (corrupted_files_curr_cap *= 1.5) * sizeof(char*));
             if (!corrupted_files) {
                 fprintf(stderr, "ERROR: Couldn't reallocate memory for corrupted file: %s\n",
                         strerror(errno));
