@@ -26,5 +26,5 @@ jobs:
 
       - name: Build on Windows
         if: contains(matrix.os, 'windows')
-        run: mingw32-make -k
+        run: mingw32-make win -k
 
