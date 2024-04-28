@@ -71,8 +71,20 @@ int isfile(const char* const name)
 
     if (attributes == INVALID_FILE_ATTRIBUTES) {
         DWORD error = GetLastError();
+
         if (error != ERROR_FILE_NOT_FOUND && error != ERROR_PATH_NOT_FOUND) {
-            fprintf(stderr, "Error retrieving attributes for %s\n", name);
+            TCHAR error_buf[ERROR_BUF_CAP];
+            FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                          NULL,
+                          error,
+                          MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                          error_buf,
+                          ERROR_BUF_CAP / sizeof(TCHAR),
+                          NULL);
+
+            fprintf(stderr, "ERROR: retrieving attributes for \"%s\": %s\n",
+                    name,
+                    error_buf);
         }
         return 0;
     }
@@ -90,11 +102,9 @@ int isfile(const char* const name)
 
 int isignored(const char* const name)
 {
-    for (size_t i = 0; i < IGNORED_CAP; ++i) {
-        if (strcmp(name, IGNORED[i]) == 0) {
+    for (size_t i = 0; i < IGNORED_CAP; ++i)
+        if (strcmp(name, IGNORED[i]) == 0)
             return 0;
-        }
-    }
     return 1;
 }
 

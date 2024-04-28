@@ -23,6 +23,9 @@ win_cross: $(BIN)_cross.exe objs_clean
 $(BIN): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $@
 
+$(OBJS): $(SRC) $(HEADERS)
+	$(CC) $(CFLAGS) -c $(SRC) -o $@
+
 $(BIN).exe: $(WIN_OBJS)
 	$(WIN_CC) $(CFLAGS) $(WIN_OBJS) -o $@
 

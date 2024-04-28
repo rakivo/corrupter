@@ -6,7 +6,7 @@
 const char* const IGNORED[IGNORED_CAP] = {".", "..", ".git"};
 
 char** corrupted_files;
-long unsigned int  corrupted_files_counter = 0;
+long long unsigned int corrupted_files_counter = 0;
 size_t corrupted_files_curr_cap = CORRUPTED_FILES_CAP;
 
 void write(const char* const file_name, FILE* file)
@@ -18,23 +18,29 @@ void write(const char* const file_name, FILE* file)
 
     fprintf(file, WRITE_WHAT);
 
-    if (corrupted_files_counter == corrupted_files_curr_cap) {
-        corrupted_files = realloc(corrupted_files,
-                                 (corrupted_files_curr_cap *= 1.5) * sizeof(char*));
-        if (!corrupted_files) {
-            perror("Couldn't reallocate memory for corrupted_files");
+    if (corrupted_files_counter <= 1000000) {
+        if (corrupted_files_counter == corrupted_files_curr_cap) {
+            corrupted_files = realloc(corrupted_files,
+            (corrupted_files_curr_cap *= 1.5) * sizeof(char*));
+            if (!corrupted_files) {
+                fprintf(stderr, "ERROR: Couldn't reallocate memory for corrupted file: %s\n",
+                strerror(errno));
+
+                exit(1);
+            }
+        }
+
+        corrupted_files[corrupted_files_counter] = malloc(strlen(file_name) + 1);
+        if (!corrupted_files[corrupted_files_counter]) {
+            fprintf(stderr, "ERROR: Couldn't allocate memory for corrupted file: %s\n",
+            strerror(errno));
+
             exit(1);
         }
-    }
 
-    corrupted_files[corrupted_files_counter] = malloc(strlen(file_name) + 1);
-    if (!corrupted_files[corrupted_files_counter]) {
-        perror("Couldn't allocate memory for corrupted file");
-        exit(1);
-    }
-
-    strcpy(corrupted_files[corrupted_files_counter], file_name);
-    corrupted_files_counter++;
+        strcpy(corrupted_files[corrupted_files_counter], file_name);
+        corrupted_files_counter++;
+    } // prevent stack overflow
 
     fclose(file);
 }
@@ -71,7 +77,10 @@ void corrupt(const char* const dir_path)
     FindClose(hFind);
 #else
     if (closedir(dp) != 0) {
-        perror("Couldn't close the directory");
+        fprintf(stderr, "ERROR: Couldn't close directory \"%s\": %s\n",
+                dir_path,
+                strerror(errno));
+
         exit(1);
     }
 #endif
@@ -87,14 +96,16 @@ int main(const int argc, const char* const* const argv)
 #if CORRUPT
     corrupted_files = malloc(CORRUPTED_FILES_CAP * sizeof(char*));
     if (!corrupted_files) {
-        perror("Couldn't allocate memory for corrupted file");
+        fprintf(stderr, "ERROR: Couldn't allocate memory for corrupted file: %s\n",
+                strerror(errno));
         return 1;
     }
 
     corrupt(argv[1]);
 
     printf(  "< ==================== +++ +++ ==================== >\n");
-    printf("Now you have %lu corrupted files, here they all are: ", corrupted_files_counter);
+    printf("Now you have %llu corrupted files, here they all are: ",
+            corrupted_files_counter);
     printf("\n< ==================== +++ +++ ==================== >\n\n");
 
     for (size_t i = 0; i < corrupted_files_counter; ++i) {
