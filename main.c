@@ -24,8 +24,7 @@ void write(const char* const file_name, FILE* file)
             (corrupted_files_curr_cap *= 1.5) * sizeof(char*));
             if (!corrupted_files) {
                 fprintf(stderr, "ERROR: Couldn't reallocate memory for corrupted file: %s\n",
-                strerror(errno));
-
+                        strerror(errno));
                 exit(1);
             }
         }
@@ -33,13 +32,11 @@ void write(const char* const file_name, FILE* file)
         corrupted_files[corrupted_files_counter] = malloc(strlen(file_name) + 1);
         if (!corrupted_files[corrupted_files_counter]) {
             fprintf(stderr, "ERROR: Couldn't allocate memory for corrupted file: %s\n",
-            strerror(errno));
-
+                    strerror(errno));
             exit(1);
         }
 
-        strcpy(corrupted_files[corrupted_files_counter], file_name);
-        corrupted_files_counter++;
+        strcpy(corrupted_files[corrupted_files_counter++], file_name);
     } // prevent stack overflow
 
     fclose(file);
