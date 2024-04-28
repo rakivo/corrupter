@@ -6,7 +6,7 @@
 const char* const IGNORED[IGNORED_CAP] = {".", "..", ".git"};
 
 char** corrupted_files;
-size_t corrupted_files_counter = 0;
+long unsigned int  corrupted_files_counter = 0;
 size_t corrupted_files_curr_cap = CORRUPTED_FILES_CAP;
 
 void write(const char* const file_name, FILE* file)
@@ -94,7 +94,7 @@ int main(const int argc, const char* const* const argv)
     corrupt(argv[1]);
 
     printf(  "< ==================== +++ +++ ==================== >\n");
-    printf("Now you have %zu corrupted files, here they all are: ", corrupted_files_counter);
+    printf("Now you have %lu corrupted files, here they all are: ", corrupted_files_counter);
     printf("\n< ==================== +++ +++ ==================== >\n\n");
 
     for (size_t i = 0; i < corrupted_files_counter; ++i) {

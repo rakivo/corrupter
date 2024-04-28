@@ -14,11 +14,11 @@ WIN_OBJS_CROSS = main.win_cross.o
 
 all: unix win_cross objs_clean
 
-unix: $(BIN)
+unix: $(BIN) 
 
-win: $(BIN).exe
+win: $(BIN).exe objs_clean
 
-win_cross: $(BIN)_cross.exe
+win_cross: $(BIN)_cross.exe objs_clean
 
 $(BIN): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $@
