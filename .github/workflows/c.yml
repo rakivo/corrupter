@@ -1,23 +1,25 @@
-name: C
+name: C Build Workflow
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
-
-env:
-  CARGO_TERM_COLOR: always
+    branches: ["master"]
 
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [windows-latest, macos-11, ubuntu-latest]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build
-      run: make
+      - uses: actions/checkout@v3
+
+      - name: Build on Ubuntu or macOS
+        if: contains(matrix.os, 'ubuntu') || contains(matrix.os, 'macos')
+        run: make -k unix
+
+      - name: Build on Windows
+        if: contains(matrix.os, 'windows')
+        run: nmake /f Makefile win -k
