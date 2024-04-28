@@ -12,7 +12,7 @@ OBJS = main.o
 WIN_OBJS = main.win.o
 WIN_OBJS_CROSS = main.win_cross.o
 
-all: unix win win_cross objs_clean
+all: unix win_cross objs_clean
 
 unix: $(BIN)
 

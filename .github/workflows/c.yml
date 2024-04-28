@@ -22,4 +22,4 @@ jobs:
 
       - name: Build on Windows
         if: contains(matrix.os, 'windows')
-        run: nmake /f Makefile win -k
+        run: .\build.bat
